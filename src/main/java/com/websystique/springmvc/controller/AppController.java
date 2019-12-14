@@ -29,6 +29,7 @@ import com.websystique.springmvc.model.UserProfile;
 import com.websystique.springmvc.service.UserProfileService;
 import com.websystique.springmvc.service.UserService;
 
+
 @Controller
 @RequestMapping("/")
 @SessionAttributes("roles")
@@ -53,10 +54,40 @@ public class AppController {
 		this.authenticationTrustResolver = authenticationTrustResolver;
 	}
 
+	@RequestMapping(value = { "/user" }, method = RequestMethod.GET)
+	public String userPage(ModelMap model) {
+
+		model.addAttribute("loggedinuser", getPrincipal());
+		return "registrationsuccess";
+	}
+
+	@RequestMapping(value = { "/", "/list" })
+	public String redirectList(ModelMap model) {
+		return "redirect:/admin/list";
+	}
+
+	@RequestMapping(value = { "/newuser" })
+	public String redirectNewuser(ModelMap model) {
+		return "redirect:/admin/newuser";
+	}
+
+	@RequestMapping(value = { "/edit-user-{ssoId}" })
+	public String redirectNewuser(@PathVariable String ssoId, ModelMap model) {
+		return "redirect:/admin/edit-user-{ssoId}";
+	}
+
+	@RequestMapping(value = { "/delete-user-{ssoId}" })
+	public String redirectDelete(@PathVariable String ssoId) {
+		return "redirect:/admin/delete-user-{ssoId}";
+	}
+
+
+
+
 	/**
 	 * This method will list all existing users.
 	 */
-	@RequestMapping(value = { "/", "/list" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/admin/list" }, method = RequestMethod.GET)
 	public String listUsers(ModelMap model) {
 
 		List<User> users = userService.findAllUsers();
@@ -68,7 +99,7 @@ public class AppController {
 	/**
 	 * This method will provide the medium to add a new user.
 	 */
-	@RequestMapping(value = { "/newuser" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/admin/newuser" }, method = RequestMethod.GET)
 	public String newUser(ModelMap model) {
 		User user = new User();
 		model.addAttribute("user", user);
@@ -81,7 +112,7 @@ public class AppController {
 	 * This method will be called on form submission, handling POST request for
 	 * saving user in database. It also validates the user input
 	 */
-	@RequestMapping(value = { "/newuser" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/admin/newuser" }, method = RequestMethod.POST)
 	public String saveUser(@Valid User user, BindingResult result,
 			ModelMap model) {
 
@@ -114,7 +145,7 @@ public class AppController {
 	/**
 	 * This method will provide the medium to update an existing user.
 	 */
-	@RequestMapping(value = { "/edit-user-{ssoId}" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/admin/edit-user-{ssoId}" }, method = RequestMethod.GET)
 	public String editUser(@PathVariable String ssoId, ModelMap model) {
 		User user = userService.findBySSO(ssoId);
 		model.addAttribute("user", user);
@@ -127,7 +158,7 @@ public class AppController {
 	 * This method will be called on form submission, handling POST request for
 	 * updating user in database. It also validates the user input
 	 */
-	@RequestMapping(value = { "/edit-user-{ssoId}" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/admin/edit-user-{ssoId}" }, method = RequestMethod.POST)
 	public String updateUser(@Valid User user, BindingResult result,
 			ModelMap model, @PathVariable String ssoId) {
 
@@ -145,10 +176,10 @@ public class AppController {
 	/**
 	 * This method will delete an user by it's SSOID value.
 	 */
-	@RequestMapping(value = { "/delete-user-{ssoId}" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/admin/delete-user-{ssoId}" }, method = RequestMethod.GET)
 	public String deleteUser(@PathVariable String ssoId) {
 		userService.deleteUserBySSO(ssoId);
-		return "redirect:/list";
+		return "redirect:/admin/list";
 	}
 	
 
@@ -178,7 +209,7 @@ public class AppController {
 		if (isCurrentAuthenticationAnonymous()) {
 			return "login";
 	    } else {
-	    	return "redirect:/list";  
+	    	return "redirect:/admin/list";
 	    }
 	}
 
