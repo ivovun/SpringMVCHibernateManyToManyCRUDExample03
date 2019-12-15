@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
@@ -37,6 +38,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
+				.antMatchers("/user").access("hasRole('ADMIN') or hasRole('USER') or hasRole('DBA')")
 
 				.antMatchers( "/admin/list")
 				.access("hasRole('ADMIN') ")
@@ -46,9 +48,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/admin/edit-user-*")
 				.access("hasRole('ADMIN')")
 
-				.antMatchers("/user").access("hasRole('ADMIN') or hasRole('USER') or hasRole('DBA')")
-
 				.and().formLogin().loginPage("/login").loginProcessingUrl("/login").usernameParameter("ssoId").passwordParameter("password")
+
+				.successHandler(myAuthenticationSuccessHandler())
 
 				.and().rememberMe().rememberMeParameter("remember-me").tokenRepository(tokenRepository)
 				.tokenValiditySeconds(86400).and().csrf().and().exceptionHandling().accessDeniedPage("/Access_Denied");
@@ -78,4 +80,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return new AuthenticationTrustResolverImpl();
 	}
 
+
+	@Bean
+	public AuthenticationSuccessHandler myAuthenticationSuccessHandler(){
+		return new MySimpleUrlAuthenticationSuccessHandler();
+	}
 }
