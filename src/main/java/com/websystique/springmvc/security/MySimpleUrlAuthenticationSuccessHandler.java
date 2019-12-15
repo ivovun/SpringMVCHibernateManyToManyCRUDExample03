@@ -66,7 +66,7 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
         } else if (isAdmin) {
             return "/admin/list";
         } else {
-            throw new IllegalStateException();
+            throw new IllegalStateException("!!!!!!!------>>>>the user mast be USE or ADMIN !!!!!!!!!");
         }
     }
 

@@ -56,19 +56,12 @@ public class AppController {
 
 	@RequestMapping(value = { "/user" }, method = RequestMethod.GET)
 	public String userPage(ModelMap model) {
-
 		model.addAttribute("loggedinuser", getPrincipal());
 		return "registrationsuccess";
 	}
 
 	@RequestMapping(value = { "/", "/list" })
 	public String redirectList(ModelMap model) {
-
-//		if (SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-//				.anyMatch(r -> r.getAuthority().equals("ROLE_USER"))) {
-//			return "redirect:/user";
-//		}
-
 		return "redirect:/admin/list";
 	}
 
